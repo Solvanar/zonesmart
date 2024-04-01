@@ -1,0 +1,35 @@
+
+@font-face
+  font-family: Graphik
+  src: url(./assets/Graphik.woff2)
+
+\:root
+  font-family: Graphik, system-ui, Avenir, Helvetica, Arial, sans-serif
+  line-height: 1.5
+  font-weight: 400
+
+  font-synthesis: none
+  text-rendering: optimizeLegibility
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+body
+  margin: 0
+  place-items: center
+  background-color: $mainBackground
+  min-height: 100vh
+  min-width: 100vw
+  color: $black
+
+#app
+  display: flex
+  align-items: center
+  justify-content: center
+  min-height: 100vh
+
+a
+  color: $mainGreen
+  cursor: pointer
+
+  &:hover
+    color: $mainGreenLight
