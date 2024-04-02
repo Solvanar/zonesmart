@@ -3,11 +3,11 @@ import axios from 'axios'
 export const login = async (email: string, password: string): Promise<any> => {
   try {
     return await axios.post(
-      `https://dev-ar.zonesmart.com/api/user/jwt/create/`,
+      'http://localhost:8080/api/login',
       {
         email,
-        password,
-      }
+        password
+      },
     )
   } catch(error) {
     return error

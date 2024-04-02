@@ -3,6 +3,7 @@
     label {{label}}
     input(
       :value="modelValue"
+      :disabled="disabled"
       :placeholder="placeholder"
       @input="$emit('update:modelValue', $event.target.value)"
     )
@@ -15,6 +16,7 @@ export default {
     modelValue: String,
     label: String,
     placeholder: String,
+    disabled: Boolean,
   },
   emits: ['update:modelValue'],
 }

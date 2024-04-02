@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Auth from '../components/Auth.vue'
 import Main from '../components/Main.vue'
-import { user } from './userModel';
+import { store } from '../store/index'
 
 const routes = [
   { path: '/', name: 'auth', component: Auth, meta: { omitAuth: true } },
@@ -15,21 +15,23 @@ const router = createRouter({
 
 router.beforeEach(async (route): Promise<any> => {
   const omitAuth = route.meta.omitAuth
+
   if (omitAuth) {
-    return;
+    return
   }
 
-  if (!user.getToken()) {
-    await user.refresh();
+  const accessToken = store.state.auth.accessToken
+  if (!accessToken) {
+    await store.dispatch('refresh');
   }
 
-  if (!omitAuth && !user.isLoggedIn) {
+  if (!omitAuth && !accessToken) {
     return {
       path: "/",
       query: route.fullPath !== "/" ? { redirect: route.fullPath } : {},
     };
   }
-  if (route.path === "/" && user.isLoggedIn) {
+  if (route.path === "/" && accessToken) {
     return {
       path: '/main',
     };

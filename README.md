@@ -1,3 +1,3 @@
 Тестовое задание zonesmart
 
-Vite, Vue 3, Vue, Vue-Router, Vuex, Pug, Sass
+Vite, Vue 3, Vue-Router, Vuex, Pug, Sass
