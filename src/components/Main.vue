@@ -1,25 +1,38 @@
 <template lang="pug">
-  h1 Мои товары ?
-  p Добавьте товары вашего магазина из одной товарной и ценовой категории (разница цены не больше 15%)
-  p Для добавления нескольких товаров введите несколько артикулов через запятую или используя клавишу Enter
+  MainSkeleton(v-if="isLoading")
 
-  .add-form
-    BaseInput(
-      :placeholder="'Введите артикул продавца, артикул WB или ссылку на товар'"
-      :label="'Добавление товаров'"
-      :disabled="true"
-      :size="'lg'"
+  template(v-if="!isLoading")
+    h1(v-if="!isLoading") Мои товары ? {{limit}} из {{totalCount}}
+    p Добавьте товары вашего магазина из одной товарной и ценовой категории (разница цены не больше 15%)
+    p Для добавления нескольких товаров введите несколько артикулов через запятую или используя клавишу Enter
+
+    .add-form(v-if="!isLoading")
+      BaseInput(
+        :placeholder="'Введите артикул продавца, артикул WB или ссылку на товар'"
+        :label="'Добавление товаров'"
+        :disabled="true"
+        :size="'lg'"
+      )
+        template(v-slot:footer) Например ваши товары: #[span.dashed 119203059], #[span.dashed 124366343], #[span.dashed 59801844]
+      BaseButton(:disabled="true") Добавить
+
+    TheTable(
+      v-if="!isLoading"
+      :data="data"
+      :totalCount="totalCount"
+      :limit="limit"
+      :offset="offset"
+      @updatePrice="updatePrice"
+      @setOffset="setOffset"
+      @setLimit="setLimit"
     )
-      template(v-slot:footer) Например ваши товары: #[span.dashed 119203059], #[span.dashed 124366343], #[span.dashed 59801844]
-    BaseButton(:disabled="true" :text="'Добавить'")
-
-  TheTable(:data="data")
 </template>
 
 <script lang="ts">
 import BaseInput from './Base/BaseInput.vue'
 import BaseButton from './Base/BaseButton.vue'
 import TheTable from './the/TheTable.vue';
+import MainSkeleton from './MainSkeleton.vue';
 import { mapActions } from 'vuex';
 
 export default {
@@ -27,29 +40,52 @@ export default {
   components: {
     TheTable,
     BaseInput,
-    BaseButton
+    BaseButton,
+    MainSkeleton,
   },
   data() {
     return {
       data: [],
-      count: 0,
+      totalCount: 0,
       isLoading: false,
+      limit: 4,
+      offset: 0,
     }
   },
   mounted() {
-    this.setLoading(true)
-    this.getData({ limit: 4, offset: 0 })
-        .then((res) => {
-          this.data = res.results
-          this.count = res.count
-        })
-        .catch((error) => console.log(error))
-        .finally(() => this.setLoading(false))
+    this.loadData();
   },
   methods: {
     ...mapActions(['getData']),
     setLoading(flag) {
       this.isLoading = flag
+    },
+    loadData() {
+      this.setLoading(true)
+      this.getData({ limit: this.limit, offset: this.offset })
+          .then((res) => {
+            this.data = res.results
+            this.totalCount = +res.count
+          })
+          .catch((error) => console.log(error))
+          .finally(() => this.setLoading(false))
+    },
+    updatePrice({selection, field, price}) {
+      this.data.forEach(item => {
+        if (!selection.includes(item.id)) {
+          return
+        }
+
+        item[field] = price
+      })
+    },
+    setOffset(offset) {
+      this.offset = +offset
+      this.loadData()
+    },
+    setLimit(limit) {
+      this.limit = +limit
+      this.loadData()
     },
   },
 }

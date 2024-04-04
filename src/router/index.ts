@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Auth from '../components/Auth.vue'
 import Main from '../components/Main.vue'
-import { store } from '../store/index'
+import { store } from '../store'
 
 const routes = [
   { path: '/', name: 'auth', component: Auth, meta: { omitAuth: true } },
