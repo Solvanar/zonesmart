@@ -20,6 +20,8 @@ button
   border: none
   color: $white
   font-weight: 600
+  width: fit-content
+  height: 50px
 
   &:hover
      background: $mainGreenDark

@@ -1,4 +1,4 @@
-import { authRefresh, login } from '../../api/api';
+import { login } from '../../api/api';
 
 const REFRESH_TOKEN = 'refresh_token'
 const ACCESS_TOKEN = 'access_token'
@@ -12,6 +12,10 @@ export const auth = {
       state.accessToken = tokenPair.access;
       localStorage.setItem(REFRESH_TOKEN, tokenPair.refresh)
       localStorage.setItem(ACCESS_TOKEN, tokenPair.access)
+    },
+    SET_ACCESS_TOKEN(state, access) {
+      state.accessToken = access;
+      localStorage.setItem(ACCESS_TOKEN, access)
     },
     REMOVE_TOKEN(state) {
       state.accessToken = '';
@@ -28,25 +32,8 @@ export const auth = {
         }).catch(reject)
       })
     },
-    async refresh({ commit }) {
-      const refreshToken = this.getRefreshToken
-      if (!refreshToken) {
-        commit('REMOVE_TOKEN')
-        return false
-      }
-
-      try {
-        const result = await authRefresh(refreshToken)
-        if (!result) {
-          commit('REMOVE_TOKEN')
-          return false
-        }
-        commit('SET_TOKEN', result)
-        return true
-      } catch (error) {
-        console.error(error)
-      }
-      return false
+    setAccessToken({ commit }, { access }) {
+      commit('SET_ACCESS_TOKEN', access)
     }
   },
   getters: {

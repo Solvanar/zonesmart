@@ -14,24 +14,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (route): Promise<any> => {
-  const omitAuth = route.meta.omitAuth
+  const omitAuth = route.meta.omitAuth ?? false
+  const accessToken = store.getters.getAccessToken
 
-  if (omitAuth) {
-    return
-  }
-
-  const accessToken = store.state.auth.accessToken
-  if (!accessToken) {
+  if (!accessToken && !omitAuth) {
     await store.dispatch('refresh');
   }
 
   if (!omitAuth && !accessToken) {
     return {
-      path: "/",
-      query: route.fullPath !== "/" ? { redirect: route.fullPath } : {},
+      path: '/',
+      query: route.fullPath !== '/' ? { redirect: route.fullPath } : {},
     };
   }
-  if (route.path === "/" && accessToken) {
+  if (route.path === '/' && accessToken) {
     return {
       path: '/main',
     };
