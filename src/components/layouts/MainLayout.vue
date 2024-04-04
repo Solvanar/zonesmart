@@ -1,11 +1,16 @@
 <template lang="pug">
-.container
-  router-view
+  TheHeader
+  .container
+    router-view
 </template>
 
 <script lang="ts">
+import TheHeader from '../the/TheHeader.vue'
 export default {
-  name: "MainLayout"
+  name: "MainLayout",
+  components: {
+    TheHeader,
+  }
 }
 </script>
 
@@ -18,5 +23,5 @@ export default {
   background-color: $white
   border-radius: 15px
   box-shadow: 0 6px 8px 0 #00000029
-  margin: 30px
+  margin: 90px
 </style>

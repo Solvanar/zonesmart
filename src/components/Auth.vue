@@ -1,12 +1,12 @@
 <template lang="pug">
-  h1 Вход {{isLoading}}
+  h1 Вход
   .no-account Нет аккаунта?&nbsp
     a Зарегистрироваться
   BaseInput(:placeholder="'yourmail@mail.ru'" :label="'Email'" v-model="email" :disabled="isLoading")
   BaseInput(:placeholder="'Ваш пароль'" :label="'Пароль'" v-model="password" :disabled="isLoading")
   .forget-password
     a Забыли пароль?
-  BaseButton(:text="isLoading ? 'Авторизация...' : 'Войти'" :disabled="!email || !password || isLoading" @click="submit")
+  BaseButton(:disabled="!email || !password || isLoading" @click="submit") {{isLoading ? 'Авторизация...' : 'Войти'}}
 </template>
 
 <script lang="ts">

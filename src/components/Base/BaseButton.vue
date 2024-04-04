@@ -1,5 +1,9 @@
 <template lang="pug">
-    button(:disabled="disabled") {{text}}
+    button(
+      :disabled="disabled"
+      :class="classNames"
+    )
+      slot
 </template>
 
 <script>
@@ -8,7 +12,24 @@ export default {
   props: {
     text: String,
     disabled: Boolean,
+    size: {
+      type: String,
+      default: 'auto'
+    },
+    colorScheme: {
+      type: String,
+      default: 'default'
+    },
   },
+  computed: {
+    classNames() {
+      return [
+          `color-scheme-${this.colorScheme}`,
+          `size-${this.size}`,
+          {'disabled': this.disabled},
+      ]
+    }
+  }
 }
 </script>
 
@@ -20,16 +41,46 @@ button
   border: none
   color: $white
   font-weight: 600
-  width: fit-content
-  height: 50px
+  position: relative
+  display: flex
+  align-items: center
+  gap: 8px
 
-  &:hover
-     background: $mainGreenDark
+  &::before
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    background-color: rgba(0, 0, 0)
+    border-radius: 6px
+    opacity: 0
+    width: 100%
+    height: 100%
+    mix-blend-mode: color-burn
 
-  &:active:not(&:disabled)
-     background: $mainGreenDoubleDark
+  &:hover:not(&:disabled)::before
+    opacity: 0.05
 
-  &:disabled
-     background-color: $mainBackground
-     color: $mainGray
+  &:active:not(&:disabled)::before
+    opacity: 0.1
+
+  &.size-auto
+    width: auto
+    height: 50px
+
+  &.size-sm
+    width: auto
+    height: 30px
+    padding: 8px 10px
+
+  &.color-scheme-default
+    background-color: $mainGreen
+
+  &.color-scheme-white
+    background-color: $buttonGray
+    color: $black
+
+  &.disabled
+    background-color: $mainBackground
+    color: $mainGray
 </style>
