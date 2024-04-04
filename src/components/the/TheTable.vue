@@ -1,13 +1,13 @@
 <template lang="pug">
   .table
     .row.header-row
-      div(:style="{width: `20px`}")
-        BaseCheckbox
       div(
         v-for="field in fields" :key="field.name"
         :style="{width: `${field.width}px`}"
-      ) {{field.title}}
-      div Удалить
+      )
+        template(v-if="field.name === 'checkbox'")
+          BaseCheckbox
+        template(v-else) {{field.title}}
 
     .row.selection-row(v-if="selection.length")
       div Выбрано {{selection.length}} из {{data.length}}
@@ -20,31 +20,37 @@
           img(:src="DeleteIcon" height="24" width="24")
           | Удалить выделенные
       div.push Для всех выделенных
+
       div(:style="{width: `${priceWidth}px`}")
-        BaseInput(:size="'sm'" v-model="massMinPrice" @change="massMinPriceSet")
+        BaseInput(:size="'sm'" v-model="massMinPrice" @change="massMinPriceSet" :type="'money'")
+
       div(:style="{width: `${priceWidth}px`}")
-        BaseInput(:size="'sm'" v-model="massMaxPrice" @change="massMaxPriceSet")
+        BaseInput(:size="'sm'" v-model="massMaxPrice" @change="massMaxPriceSet" :type="'money'")
+
+      div(:style="{width: `${fields[fields.length - 1].width}px`}")
 
     .row.content-row(v-for="item in data" :key="item.id")
-      div
-        BaseCheckbox(@input="toggleRow(item.id)" :model-value="selection.includes(item.id)")
       div.column(
           v-for="field in fields" :key="field.name"
           :style="{width: `${field.width}px`}"
         )
+          div(v-if="field.name === 'checkbox'")
+            BaseCheckbox(@input="toggleRow(item.id)" :model-value="selection.includes(item.id)")
+
           div(v-if="field.name === 'images'")
             img.small(:src="item[field.name][0]")
+
           div(v-else-if="field.name === 'remote_id'")
             img(:src="LinkIcon" height="24" width="24")
             | {{item[field.name]}}
+
           div(v-else-if="['min_price', 'max_price'].includes(field.name)")
-            BaseInput(v-model="item[field.name]" :size="'sm'")
+            BaseInput(v-model="item[field.name]" :size="'sm'" :type="'money'")
+
+          div(v-else-if="field.name === ''")
+            img(:src="DeleteIcon" height="24" width="24")
+
           div(v-else) {{item[field.name]}} {{`${field.name === 'price' ? '₽' : ''}`}}
-      div
-        img(:src="DeleteIcon" height="24" width="24")
-
-  ThePagination(:limit="limit" :offset="offset" :pages="pages" @set-offset="setOffset" @set-limit="setLimit")
-
 </template>
 
 <script>
@@ -53,7 +59,6 @@ import BaseCheckbox from '../Base/BaseCheckbox.vue'
 import BaseButton from '../Base/BaseButton.vue'
 import LinkIcon from '../../assets/icons/link-icon.svg'
 import DeleteIcon from '../../assets/icons/delete-icon.svg'
-import ThePagination from '../the/ThePagination.vue'
 
 export default {
   name: "TheTable",
@@ -61,10 +66,10 @@ export default {
     BaseButton,
     BaseInput,
     BaseCheckbox,
-    ThePagination,
   },
   props: {
     data: Array,
+    fields: Array,
     limit: Number,
     offset: Number,
     totalCount: Number,
@@ -77,56 +82,11 @@ export default {
       selection: [],
       massMinPrice: 0,
       massMaxPrice: 0,
-      fields: [
-        {
-          name: 'images',
-          title: 'Фото',
-          width: 50,
-        },
-        {
-          title: 'Артикул продавца',
-          name: 'remote_id',
-          width: 130,
-        },
-        {
-          title: 'Бренд',
-          name: 'brand_name',
-          width: 125,
-        },
-        {
-          title: 'Название',
-          name: 'title',
-          width: 350,
-        },
-        {
-          title: 'Остаток, шт.',
-          name: 'quantity',
-          width: 120,
-        },
-        {
-          title: 'Текущая цена',
-          name: 'price',
-          width: 135,
-        },
-        {
-          title: 'Минимальная цена',
-          name: 'min_price',
-          width: 135,
-        },
-        {
-          title: 'Максимальная цена',
-          name: 'max_price',
-          width: 135,
-        },
-      ]
     }
   },
   computed: {
     priceWidth() {
       return this.fields.find(item => item.name === 'price')?.width || 135
-    },
-    pages() {
-      return Math.ceil(this.totalCount / this.limit)
     },
   },
   methods: {
@@ -138,16 +98,10 @@ export default {
       console.log('Удалены элементы: ', JSON.stringify(this.selection))
     },
     massMinPriceSet(e) {
-      this.$emit('update-price', {selection: this.selection, field: 'min_price', price: +e.target.value})
+      this.$emit('update-price', {selection: this.selection, field: 'min_price', price: e.target.value})
     },
     massMaxPriceSet(e) {
-      this.$emit('update-price', {selection: this.selection, field: 'max_price', price: +e.target.value})
-    },
-    setOffset(page) {
-      this.$emit('set-offset', page)
-    },
-    setLimit(limit) {
-      this.$emit('set-limit', limit)
+      this.$emit('update-price', {selection: this.selection, field: 'max_price', price: e.target.value})
     },
   }
 }

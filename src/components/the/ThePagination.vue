@@ -1,6 +1,5 @@
 <template lang="pug">
   .pagination
-
     .page(:class="{'hidden': offset <= 0}" @click="decreaseOffset") <
     .page(
       v-for="i in pages"
@@ -47,7 +46,6 @@ export default {
       }
     },
     setOffset(page) {
-      console.log(page)
       this.$emit('set-offset', page)
     }
   }

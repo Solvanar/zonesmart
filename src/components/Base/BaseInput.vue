@@ -6,7 +6,7 @@
       :disabled="disabled"
       :placeholder="placeholder"
       :class="`size-${size || 'auto'}`"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="onInput"
     )
     .label-footer
       slot(name="footer")
@@ -21,8 +21,24 @@ export default {
     placeholder: String,
     disabled: Boolean,
     size: String,
+    type: {
+      type: String,
+      default: 'string'
+    },
   },
   emits: ['update:modelValue'],
+  methods: {
+    moneyMask(e) {
+      let value = e.target.value.replace(/\D/g, '')
+
+      const result = new Intl.NumberFormat('ru').format(value)
+      e.target.value = result + ' ₽'
+    },
+    onInput(e) {
+      this.type === 'money' && this.moneyMask(e)
+      this.$emit('update:modelValue', e.target.value)
+    }
+  }
 }
 </script>
 

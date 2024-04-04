@@ -39,7 +39,7 @@ export default {
     background-position-x: 0%
 
 .skeleton-table
-  min-width: 1200px
+  min-width: 1500px
   height: 180px
   border-radius: 6px
   padding: 10px
