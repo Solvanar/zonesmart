@@ -4,7 +4,8 @@ import Main from '../components/Main.vue'
 import { store } from '../store'
 
 const routes = [
-  { path: '/', name: 'auth', component: Auth, meta: { omitAuth: true } },
+  { path: '/', redirect: { path: '/auth' } },
+  { path: '/auth', name: 'auth', component: Auth, meta: { omitAuth: true } },
   { path: '/main', name: 'main', component: Main, meta: { omitAuth: false } },
 ]
 

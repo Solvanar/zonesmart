@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { store } from '../store';
+import router from '../router';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
@@ -7,40 +8,45 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
-    const token = store.getters.getAccessToken;
+    const token = store.getters.getAccessToken
     if (token) {
-      config.headers.Authorization = `JWT ${token}`;
+      config.headers.Authorization = `JWT ${token}`
     }
-    return config;
+    return config
   },
   error => {
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
 api.interceptors.response.use(
   response => {
-    return response;
+    return response
   },
   async error => {
-    const originalRequest = error.config;
+    const originalRequest = error.config
     if (error.response.data.code === 'token_not_valid' && !originalRequest._retry) {
-      originalRequest._retry = true;
+      originalRequest._retry = true
       try {
-        await refreshToken();
-        return api(originalRequest);
+        await refreshToken()
+        return api(originalRequest)
       } catch (refreshError) {
-        return Promise.reject(refreshError);
+        return Promise.reject(refreshError)
       }
     }
-    return Promise.reject(error);
+
+    if (error.response.status === 401) {
+      router.push('auth')
+      return
+    }
+    return Promise.reject(error)
   }
-);
+)
 
 async function refreshToken() {
-  const refreshToken = store.getters.getRefreshToken;
+  const refreshToken = store.getters.getRefreshToken
   if (!refreshToken) {
-    throw new Error('No refresh token');
+    throw new Error('No refresh token')
   }
   const response = await api.post('/refresh', { refreshToken })
   const { access } = response.data
@@ -57,8 +63,8 @@ export const login = async (email: string, password: string): Promise<any> => {
 
 export const data = async (limit: number, offset: number): Promise<any> => {
   try {
-    return await api.get('/data', { params: { limit, offset } });
+    return await api.get('/data', { params: { limit, offset } })
   } catch(error) {
-    console.log(error)
+    console.log(error.response.data)
   }
 }

@@ -10,10 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-
   const result = await axios.post(
     `https://dev-ar.zonesmart.com/api/user/jwt/create/`,
-    { email, password }
+    { email, password },
   )
 
   res.send(result.data);
@@ -23,7 +22,7 @@ app.post('/api/refresh', async (req, res) => {
   const { refreshToken } = req.body;
 
   const result = await axios.post(
-    `https://dev-ar.zonesmart.com/api/user/jwt/refresh/`,
+    `https://dev-ar.zonesmart.com/api/user/jwt/refresh`,
     { refresh: refreshToken }
   )
 
@@ -37,7 +36,7 @@ app.get('/api/data', async (req, res) => {
   let isError = false
   const result = await axios({
     method: 'GET',
-    url: 'https://dev-ar.zonesmart.com/api/product/',
+    url: 'https://dev-ar.zonesmart.com/api/product',
     headers: {
       'authorization': authorization
     },
@@ -45,11 +44,11 @@ app.get('/api/data', async (req, res) => {
   }).catch((error) => {
     isError = true
     return {
-      data: error.response?.data
+      data: error.response?.data,
+      status: error.response.status,
     }
   });
-
-  isError ? res.status(500).send(result.data) : res.send(result.data)
+  isError ? res.status(result.status).send(result.data) : res.send(result.data)
 });
 
 const PORT = 8080;
