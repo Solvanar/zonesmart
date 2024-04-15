@@ -1,10 +1,13 @@
 <template lang="pug">
-  input(
-    type="checkbox"
-    class="base-checkbox"
-    :value="modelValue"
-    @change="$emit('update:modelValue', $event.target.value)"
+  .base-checkbox-wrapper
+    input(
+      type="checkbox"
+      class="base-checkbox"
+      :checked="modelValue"
+      @change="handleChange($event.target.checked)"
     )
+    label
+      slot
 </template>
 
 <script lang="ts">
@@ -14,10 +17,20 @@ export default {
   props: {
     modelValue: Boolean,
   },
+  methods: {
+    handleChange(checked: boolean) {
+      this.$emit('update:modelValue', checked)
+    }
+  }
 }
 </script>
 
 <style scoped lang="sass">
+.base-checkbox-wrapper
+  display: flex
+  align-items: center
+  gap: 5px
+
 .base-checkbox
   appearance: none
   -webkit-appearance: none
